@@ -1,42 +1,35 @@
 # Utilizando o Power BI para criar painéis para o System Center Configuration Manager "SCCM".
 
-Para criar o painel vamos utilizar alg
+Neste projeto vamos acessar a base de dados do SCCM que está no SQL Server e vou mostras quais consultas vamos utilizar para montar o nosso painel.
 
-Vamos definir o objetivo a ser alcançados com os nossos painéis:
- * Quantitativos:
-   * Total de servidores.
-   * Total de estações de trabalho.
-   * Total de estações de trabalho Ativos e desativado.
-   * Proporção por sistema operacional.
-   * Quantitativo de servidores e estações de trabalho por localize ou escritório.
-   * Total de sistemas operacionais.
-   * Total de aplicativos instalados nos servidores e estação de trabalho.
-   * Quantitativo por tipo de máquina "Física" ou "Virtual".
-   * Total de servidores e estações de trabalho com atualização do "SO" em dia.
-   * Total de servidores e estações de trabalho com atualização do "SO" pendente.
-   * Volume dos discos "hd".
-   * Total de CPU's.
-   * Total de Mémoria RAM.
+## Vamos definir as informações que serão fornecidas pelo painel.
 
-* Qualitativo:
-   * Lista de servidores e estações de trabalho por "SO"
-   * Lista de servidores e estações de trabalho por localidade ou escritório.
-   * Lista de aplicativos instalado.
-   * BackList de aplicativos.
-   * Lista de servidores e estações de trabalho com aplicativos da backlist instalado.
-   * Lista de servidores e estações de trabalho com atualização do "SO" em dia.
-   * Lista de servidores e estações de trabalho com atualização do "SO" pendente.
-   * Lista de servidores e estações de trabalho com antivirus instalado e sem.
-   * Lista de IP's.
-* Gráficos:
-   * ......
-   * ......
-   * ......
+### Dados quantitativos:
++ Total de servidores.
++ Total de estações de trabalho.
++ Total de estações de trabalho 
+  + Ativos
+  + Desativado.
++ Proporção sistemas operacionais.
++ Quantitativo de servidores e estações de trabalho por localize ou escritório.
++ Total de sistemas operacionais.
++ Total de aplicativos instalados nos servidores e estação de trabalho.
++ Quantitativo por tipo de máquina "Física" ou "Virtual".
++ Volume dos discos "hd".
+  + Total 
+  + Livre
++ Total de CPU's.
++ Total de Mémoria RAM.
 
-Antes de começar a desenvolver os painéis é preciso entender a estrutura de dados do SCCM. Para facilitar a extração dos dados por padrão existe diversas visões "VIEW" configuradas na base de dados do SCCM.
+### Dados qualitativo:
++ Lista de servidores e estações de trabalho por "SO"
++ Lista de servidores e estações de trabalho por localidade ou escritório.
++ Lista de aplicativos instalado.
 
-<p>Cada visão começa com uma siglas, para sua classificação:</p>
+### Base de dados do SCCM.
+Antes de começar a desenvolver o painel será preciso entender a estrutura de dados do SCCM. Para facilitar a extração dos dados por padrão existe diversas visões "VIEW" configuradas na base de dados do SCCM.
 
+#### Cada visão começa com uma sigla, para sua classificação:
 -------------------------------
 | Sigla         | Descrição    |
 |---------------|--------------|
@@ -48,7 +41,26 @@ Antes de começar a desenvolver os painéis é preciso entender a estrutura de d
 | v_            | Todos os outros |
 -----------------------------------
 
+#### Tabelas ou views que serão utilizadas no projeto.
+-------------------------------
+| Tabelas ou Views         | Descrição    |
+|---------------|--------------|
+|v_R_System|	Lista todos os recursos do sistema descobertos por ID de recurso
+|v_GS_COMPUTER_SYSTEM|	Lista informações sobre os clientes do Gerenciador de Configurações
+|v_GS_PC_BIOS|	Lista informações sobre o BIOS encontrado em clientes do Configuration Manager
+|v_GS_OPERATING_SYSTEM|	Lista informações sobre o sistema operacional encontrado em Configuration Manager clientes
+|v_GS_X86_PC_MEMORY|	Lista informações sobre a memória encontrada em Configuration Manager clientes
+|v_GS_SYSTEM_ENCLOSURE|	Lista informações sobre o gabinete do sistema encontrado em clientes do Gerenciador de Configurações
+|v_GS_PROCESSOR|	Lista informações sobre os processadores encontrados em Configuration Manager clientes
+|v_GS_SoftwareProduct| Lista os produtos encontrados em cada cliente do Gerenciador de Configurações
+|v_GS_SoftwareFile|	Lista os arquivos e IDs de produto associados em cada cliente do Gerenciador de Configurações
+|v_GS_LOGICAL_DISK|	Lista informações sobre os discos lógicos encontrados em Configuration Manager clientes
 
+#### Querys
+Serão utilizadas três consultas “querys” para o desenvolvimento do projeto.
++ 00-ServerHost.sql
++ 01-SoftwareInstall.sql
++ 02-HardDisk.sql
 
 
 
