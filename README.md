@@ -63,7 +63,7 @@ Serão utilizadas três consultas “querys” para o desenvolvimento do projeto
 + 02-HardDisk.sql
 
 ##### 00-ServerHost.sql
-Lista todas a maquinas cadastradas no SCCM.
+Retorna todas as maquinas cadastradas no SCCM.
 ````
 SELECT RS.[ResourceID]         
      , CS.[Manufacturer0]                AS 'Fabricante'
@@ -117,8 +117,39 @@ WHERE RS.Client0 IS NOT NULL
 AND CS.[Name0] IS NOT NULL 
 ````
 ##### 01-SoftwareInstall.sql
-
-
+Retorna todos os softwares instalados nos servidores e estações de trabalho cadastradas no SCCM.
+````
+SELECT DISTINCT 
+       A.ResourceID
+     , A.Name0 AS [Computer Name]
+     , S.CompanyName
+     , S.ProductName
+     , F.FileName
+     , F.FileVersion
+     , F.FilePath
+FROM CM_IFR.dbo.V_R_System AS A
+INNER JOIN CM_IFR.dbo.v_GS_SoftwareProduct AS S ON S.ResourceID = A.ResourceID
+INNER JOIN CM_IFR.dbo.v_GS_SoftwareFile AS F ON F.ResourceID = S.ResourceID AND F.ProductId = S.ProductID
+````
+##### 02-HardDisk.sql
+Retorna todos os hd's configurados nos servidores e estações de trabalho cadastradas no SCCM.
+````
+SELECT ResourceID
+     , GroupID
+	 , RevisionID
+	 , Name0 as 'Unidade'
+	 , Caption0
+	 , Compressed0
+	 , Description0
+	 , FileSystem0
+	 , Size0
+	 , FreeSpace0
+	 , SystemName0
+	 , VolumeName0
+	 , VolumeSerialNumber0
+	 , TimeStamp
+FROM  CM_IFR.[dbo].v_GS_LOGICAL_DISK 
+```` 
 
 ## Referências 
 * [Compreendendo os dados do Configuration Manager](https://www.informit.com/articles/article.aspx?p=2514918)
