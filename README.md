@@ -65,56 +65,152 @@ Serão utilizadas três consultas “querys” para o desenvolvimento do projeto
 ##### 00-ServerHost.sql
 Retorna todas as maquinas cadastradas no SCCM.
 ````
-SELECT RS.[ResourceID]         
-     , CS.[Manufacturer0]                AS 'Fabricante'
-     , CS.[Model0]                       AS 'Modelo'
-     , CS.[Name0]                        AS 'HostName'
-     , CS.[Domain0]                      AS 'Dominio'
-     , CS.[UserName0]                    AS 'UserName'
-     , CASE
-         WHEN (RS.Is_Virtual_Machine0 = '1') THEN 'Virtual'
-         WHEN (RS.Is_Virtual_Machine0 = '0') THEN 'Physical'
-        ELSE '_NI'
-       END                               AS 'MachineType'
-     , CASE
-         WHEN SY.ChassisTypes0 IN ('3','4','6','15','16') THEN 'Desktop'
-         WHEN SY.ChassisTypes0 IN ('7','17','23') THEN 'Physical Server'
-         WHEN SY.ChassisTypes0 IN ('8','9','10') THEN 'Notebook'
-         WHEN (SY.ChassisTypes0 = '1') AND (RS.Is_Virtual_Machine0 = '1')THEN 'Virtual Machine'
-        ELSE 'Others'
-       END                               AS 'Chassi' 
-     , BI.SerialNumber0              AS 'BioSerialNumber'
-     , RS.Operating_System_Name_and0     AS 'OS'
-     , OS.[CSDVersion0]                  AS 'OSPKVersao'
-     , OS.[Version0]                     AS 'OSVersao'
-     , OS.[SerialNumber0]                AS 'NSerie'
-     , ME.[TotalPhysicalMemory0] / 1024  AS 'TotalPhysicalMemory'
-     , CP.Manufacturer0                  AS 'CPUFabricante'
-     , CP.NameCPU                        AS 'CPUModelo'
-     , CP.Sockets                        AS 'CPUSockets'
-     , CP.CoresPerSocket
-     , CASE
-         WHEN RS.Active0 = 1 THEN 'Active'
-         WHEN RS.Active0 = 0 THEN 'Inactive'                     
-       END                                AS 'Status'
-     , CASE
-         WHEN Client0 = 1 THEN 'Client Installed'
-        ELSE 'No Client'
-       END                                AS 'ClientSCCM'
-FROM CM_IFR.[dbo].[v_R_System] AS RS
-LEFT JOIN CM_IFR.[dbo].[v_GS_COMPUTER_SYSTEM]  AS CS ON RS.[ResourceID] = CS.[ResourceID]
-LEFT JOIN CM_IFR.[dbo].[v_GS_PC_BIOS]          AS BI ON RS.[ResourceID] = BI.[ResourceID]
-LEFT JOIN CM_IFR.[dbo].[v_GS_OPERATING_SYSTEM] AS OS ON OS.[ResourceID] = CS.[ResourceID]
-LEFT JOIN CM_IFR.[dbo].[v_GS_X86_PC_MEMORY]    AS ME ON RS.[ResourceID] = ME.[ResourceID]
-LEFT JOIN CM_IFR.[dbo].[v_GS_SYSTEM_ENCLOSURE] AS SY ON RS.[ResourceID] = SY.[ResourceID]
+
+SELECT DISTINCT
+       SYS.ResourceID,
+       SYS.Name0 as 'Hostname',
+       'Regiao'=CASE
+                     WHEN (IP.IP_Subnets0 like '10.0.%') or (IP.IP_Subnets0 like '10.9.%') THEN 'DF'
+                     WHEN (IP.IP_Subnets0 like '10.8.%') THEN 'DF'
+                     WHEN (IP.IP_Subnets0 like '10.1.%') or (IP.IP_Subnets0 like '10.143.%') THEN 'GM'
+                     WHEN (IP.IP_Subnets0 like '10.30.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.31.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.32.128.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.32.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.33.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.36.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.30.128.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.34.128.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.34.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.35.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.37.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.38.%') THEN 'RJ'
+                     WHEN (IP.IP_Subnets0 like '10.39.%') THEN 'SP'
+                     WHEN (IP.IP_Subnets0 like '10.49.%') THEN 'SP'
+                     WHEN (IP.IP_Subnets0 like '10.82.%') THEN 'SP'
+                     WHEN (IP.IP_Subnets0 like '10.83.%') THEN 'SP'
+                     WHEN (IP.IP_Subnets0 like '10.2.%') THEN 'SP'
+                     WHEN (IP.IP_Subnets0 like '10.6.%') THEN 'SP'
+                     WHEN (IP.IP_Subnets0 like '10.40.128.%') THEN 'SP'
+                     WHEN (IP.IP_Subnets0 like '10.40.%') THEN 'SP'
+                     WHEN (IP.IP_Subnets0 like '10.41.%') THEN 'SP'
+                     WHEN (IP.IP_Subnets0 like '10.42.%') or (IP.IP_Subnets0 like '10.11.44.%')  THEN 'SP'
+                     WHEN (IP.IP_Subnets0 like '10.43.%') THEN 'MG'
+                     WHEN (IP.IP_Subnets0 like '10.44.%') THEN 'MG'
+                     WHEN (IP.IP_Subnets0 like '10.45.%') THEN 'MG'
+                     WHEN (IP.IP_Subnets0 like '10.46.%') THEN 'MG'
+                     WHEN (IP.IP_Subnets0 like '10.47.%') THEN 'MG'
+                     WHEN (IP.IP_Subnets0 like '10.48.%') THEN 'MG'
+                     WHEN (IP.IP_Subnets0 like '10.80.%') THEN 'MG'
+                     WHEN (IP.IP_Subnets0 like '10.81.%') THEN 'MG'
+                     WHEN (IP.IP_Subnets0 like '10.84.%') THEN 'MG'
+                     WHEN (IP.IP_Subnets0 like '10.85.%') THEN 'MG'
+                     WHEN (IP.IP_Subnets0 like '10.86.%') THEN 'SC'
+                     WHEN (IP.IP_Subnets0 like '10.87.%') THEN 'SC'
+                     WHEN (IP.IP_Subnets0 like '10.3.%') THEN 'SC'
+                     WHEN (IP.IP_Subnets0 like '10.50.%') THEN 'SC'
+                     WHEN (IP.IP_Subnets0 like '10.51.%') THEN 'SC'
+                     WHEN (IP.IP_Subnets0 like '10.52.%') THEN 'SC'
+                     WHEN (IP.IP_Subnets0 like '10.53.%') THEN 'SC'
+                     WHEN (IP.IP_Subnets0 like '10.54.%') THEN 'SC'
+                     WHEN (IP.IP_Subnets0 like '10.55.%') THEN 'SC'
+                     WHEN (IP.IP_Subnets0 like '10.56.%') THEN 'SC'
+                     WHEN (IP.IP_Subnets0 like '10.57.%') THEN 'SC'
+                     WHEN (IP.IP_Subnets0 like '10.58.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.7.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.90.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.91.128.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.91.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.92.128.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.92.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.93.128.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.93.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.94.128.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.94.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.95.128.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.95.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.96.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.97.%') THEN 'ES'
+                     WHEN (IP.IP_Subnets0 like '10.99.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.4.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.60.128.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.60.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.61.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.62.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.63.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.64.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.65.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.66.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.67.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.68.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.69.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.5.%') THEN 'MT'
+                     WHEN (IP.IP_Subnets0 like '10.70.128.0') or (IP.IP_Subnets0 like '10.70.147.0') or (IP.IP_Subnets0 like '10.70.156.0') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.70.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.71.128.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.71.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.73.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.75.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.76.128.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.76.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.78.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.72.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.74.128.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.74.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.77.%') THEN 'CE'
+                     WHEN (IP.IP_Subnets0 like '10.79.%') THEN 'CE'
+           ELSE '_NI'
+       END,
+       'Chassi' = CASE
+                     WHEN SYSENC.ChassisTypes0 IN ('3','4','6','15','16') THEN 'Desktop'
+                     WHEN SYSENC.ChassisTypes0 IN ('7','17','23') THEN 'Physical Server'
+                     WHEN SYSENC.ChassisTypes0 IN ('8','9','10') THEN 'Notebook'
+                     WHEN (SYSENC.ChassisTypes0 = '1') AND (SYS.Is_Virtual_Machine0 = '1')THEN 'Virtual Machine'
+          ELSE 'Others'
+       END,
+       'MachineType' = CASE
+                     WHEN (SYS.Is_Virtual_Machine0 = '1') THEN 'Virtual'
+                     WHEN (SYS.Is_Virtual_Machine0 = '0') THEN 'Physical'
+          ELSE '_NI'
+       END,
+       SYS.Operating_System_Name_and0 as 'OS',
+       OPSYS.Caption0 as 'OS Caption',
+       CSYS.Manufacturer0 as 'CManufacturer',
+       CSYS.Model0 as 'Model',
+       MEM.TotalPhysicalMemory0 as 'TotalPhysicalMemory',
+       Processor.Manufacturer0 as 'ProcessorManufacturer',
+       CP.NameCPU AS 'CPUModelo',
+       Processor.MaxClockSpeed0 as 'ProcessorClock',
+       CP.Sockets AS 'CPUSockets',
+       CP.CoresPerSocket,
+       HWSCAN.LastHWScan,
+       SWSCAN.LastScanDate as 'LastSWScan',
+       'Client Status' = CASE
+                     WHEN SYS.Active0 = 1 THEN 'Active'
+          ELSE 'Inactive'
+       END,
+       'Client SCCM' = CASE
+                     WHEN Client0 = 1 THEN 'Client Installed'
+          ELSE 'No Client'
+       END
+FROM
+CM_IFR.[dbo].v_R_System SYS
+LEFT JOIN CM_IFR.[dbo].v_GS_X86_PC_MEMORY MEM on SYS.ResourceID = MEM.ResourceID
+LEFT JOIN CM_IFR.[dbo].v_GS_COMPUTER_SYSTEM CSYS on SYS.ResourceID = CSYS.ResourceID
+LEFT JOIN CM_IFR.[dbo].v_GS_PROCESSOR Processor  on Processor.ResourceID = SYS.ResourceID
+LEFT JOIN CM_IFR.[dbo].v_GS_OPERATING_SYSTEM OPSYS on SYS.ResourceID = OPSYS.ResourceID
+LEFT JOIN CM_IFR.[dbo].v_GS_LastSoftwareScan SWSCAN on SYS.ResourceID = SWSCAN.ResourceID
+LEFT JOIN CM_IFR.[dbo].v_GS_WORKSTATION_STATUS HWSCAN on SYS.ResourceID = HWSCAN.ResourceID
+LEFT JOIN CM_IFR.[dbo].v_GS_SYSTEM_ENCLOSURE SYSENC on SYS.ResourceId = SYSENC.ResourceId
+LEFT JOIN CM_IFR.[dbo].v_RA_System_IPSubnets IP ON SYS.ResourceID = IP.ResourceID
+LEFT JOIN CM_IFR.[dbo].v_R_User USR ON SYS.User_Name0 = USR.User_Name0
 LEFT JOIN (SELECT DISTINCT CPU.[ResourceID], (CPU.SystemName0) AS [Hostname], CPU.Manufacturer0, CPU.Name0 AS NameCPU
-                , COUNT(distinct CPU.SocketDesignation0) AS [Sockets], SUM(CPU.NumberOfCores0) AS [CoresPerSocket]
-           FROM CM_IFR.[dbo].[v_GS_PROCESSOR] CPU
-           INNER JOIN  CM_IFR.[dbo].v_GS_COMPUTER_SYSTEM CSYS on CPU.ResourceID = CSYS.ResourceID
-           GROUP BY CPU.[ResourceID],CPU.SystemName0,CPU.Manufacturer0,CPU.Name0,CPU.NumberOfCores0
-          ) AS CP ON RS.[ResourceID] = CP.[ResourceID]
-WHERE RS.Client0 IS NOT NULL 
-AND CS.[Name0] IS NOT NULL 
+, COUNT(distinct CPU.SocketDesignation0) AS [Sockets], SUM(CPU.NumberOfCores0) AS [CoresPerSocket]
+FROM CM_IFR.[dbo].[v_GS_PROCESSOR] CPU
+INNER JOIN  CM_IFR.[dbo].v_GS_COMPUTER_SYSTEM CSYS on CPU.ResourceID = CSYS.ResourceID
+GROUP BY CPU.[ResourceID],CPU.SystemName0,CPU.Manufacturer0,CPU.Name0,CPU.NumberOfCores0
+) AS CP ON SYS.[ResourceID] = CP.[ResourceID]
+
 ````
 ##### 01-SoftwareInstall.sql
 Retorna todos os softwares instalados nos servidores e estações de trabalho cadastradas no SCCM.
