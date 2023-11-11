@@ -55,6 +55,11 @@ Antes de começar a desenvolver o painel será preciso entender a estrutura de d
 |v_GS_SoftwareProduct| Lista os produtos encontrados em cada cliente do Gerenciador de Configurações
 |v_GS_SoftwareFile|	Lista os arquivos e IDs de produto associados em cada cliente do Gerenciador de Configurações
 |v_GS_LOGICAL_DISK|	Lista informações sobre os discos lógicos encontrados em Configuration Manager clientes
+|v_GS_LastSoftwareScan|Lista a última vez que cada cliente do Gerenciador de Configurações foi verificado em busca de inventário de software. 
+|v_GS_WORKSTATION_STATUS|Lista informações de status da estação de trabalho para clientes do Gerenciador de Configurações, incluindo a última verificação de hardware, ID de localidade padrão, deslocamento de fuso horário e assim por diante.
+|v_RA_System_IPSubnets|Lista as sub-redes IP para recursos do sistema descobertos. 
+|v_R_User|Lista todos os recursos de usuário descobertos por ID de recurso, tipo de recurso, nome de usuário, domínio e assim por diante. 
+
 
 #### Querys
 Serão utilizadas três consultas “querys” para o desenvolvimento do projeto.
