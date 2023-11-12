@@ -1,8 +1,8 @@
-# Utilizando o Power BI para criar painéis para o System Center Configuration Manager "SCCM".
+# Utilizando o Power BI para criar painéis com os dados do System Center Configuration Manager "SCCM".
 
-Neste projeto vamos acessar a base de dados do SCCM que está no SQL Server e vou mostras quais consultas vamos utilizar para montar o nosso painel.
+Neste projeto vamos entender parte da estrutura de dados do SCCM e desenvolver algumas query's para extrair as informações da base de dados do SCCM.
 
-## Vamos definir as informações que serão fornecidas pelo painel.
+## O que será extraido.
 
 ### Dados quantitativos:
 + Total de servidores.
@@ -23,11 +23,19 @@ Neste projeto vamos acessar a base de dados do SCCM que está no SQL Server e vo
 
 ### Dados qualitativo:
 + Lista de servidores e estações de trabalho por "SO"
-+ Lista de servidores e estações de trabalho por localidade ou escritório.
++ Lista de servidores e estações de trabalho e sua localidade.
 + Lista de aplicativos instalado.
 
+## Power BI
+|||
+|----|------|
+|![image](https://github.com/j-a-vicente/Power_BI_SCCM/blob/main/imagens/quantitativo.PNG?raw=true)|![image](https://github.com/j-a-vicente/Power_BI_SCCM/blob/main/imagens/servidores.PNG?raw=true)|
+|![image](https://github.com/j-a-vicente/Power_BI_SCCM/blob/main/imagens/esta%C3%A7%C3%B5es.PNG?raw=true)|![image](https://github.com/j-a-vicente/Power_BI_SCCM/blob/main/imagens/softwareInstalados.PNG?raw=true)|
+
 ### Base de dados do SCCM.
-Antes de começar a desenvolver o painel será preciso entender a estrutura de dados do SCCM. Para facilitar a extração dos dados por padrão existe diversas visões "VIEW" configuradas na base de dados do SCCM.
+Antes de começar a desenvolver as query's, vamos entender a estrutura de dados do SCCM. 
+
+Para facilitar a extração dos dados por padrão existe diversas visões "VIEW" configuradas na base de dados do SCCM.
 
 #### Cada visão começa com uma sigla de classificação:
 -------------------------------
@@ -66,6 +74,10 @@ Serão utilizadas três consultas “querys” para o desenvolvimento do projeto
 + 00-ServerHost.sql
 + 01-SoftwareInstall.sql
 + 02-HardDisk.sql
+
+### Power BI.
+Dentro do Power BI as tabelas vão se relacionar pela coluna "ResourceID".
+![image](https://github.com/j-a-vicente/Power_BI_SCCM/blob/main/imagens/diagrama.PNG?raw=true)
 
 ##### 00-ServerHost.sql
 Retorna todas as maquinas cadastradas no SCCM.
