@@ -2,7 +2,7 @@
 
 Neste projeto vamos entender parte da estrutura de dados do SCCM e desenvolver algumas query's para extrair as informações da base de dados do SCCM.
 
-## O que será extraido.
+## O que será extraído.
 
 ### Dados quantitativos:
 + Total de servidores.
@@ -80,7 +80,7 @@ Dentro do Power BI as tabelas vão se relacionar pela coluna "ResourceID".
 ![image](https://github.com/j-a-vicente/Power_BI_SCCM/blob/main/imagens/diagrama.PNG?raw=true)
 
 ##### 00-ServerHost.sql
-Retorna todas as maquinas cadastradas no SCCM.
+Retorna todas as máquinas cadastradas no SCCM.
 ````
 
 SELECT DISTINCT
